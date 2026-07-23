@@ -1,0 +1,186 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@theme inline {
+  --font-sans: var(--font-space-grotesk), 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-archivo), 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-ink: var(--ink);
+  --color-cream: var(--cream);
+  --color-blaze: var(--blaze);
+  --color-electric: var(--electric);
+  --color-ash: var(--ash);
+
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+}
+
+:root {
+  color-scheme: light;
+
+  --cream: #f3ebdd;
+  --ink: #111111;
+  --blaze: #ff3b30;
+  --electric: #245bff;
+  --ash: #b7b2aa;
+
+  --background: var(--cream);
+  --foreground: var(--ink);
+  --card: var(--cream);
+  --card-foreground: var(--ink);
+  --popover: var(--cream);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--cream);
+  --secondary: #e8dfd0;
+  --secondary-foreground: var(--ink);
+  --muted: #e8dfd0;
+  --muted-foreground: #6f6a63;
+  --accent: var(--blaze);
+  --accent-foreground: var(--cream);
+  --destructive: var(--blaze);
+  --border: rgba(17, 17, 17, 0.16);
+  --input: rgba(17, 17, 17, 0.24);
+  --ring: var(--blaze);
+  --radius: 0px;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    -webkit-tap-highlight-color: transparent;
+  }
+  html {
+    @apply bg-background;
+    overflow-x: hidden;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    overflow-x: hidden;
+  }
+  ::selection {
+    background: var(--blaze);
+    color: var(--cream);
+  }
+  :focus-visible {
+    outline: 2px solid var(--electric);
+    outline-offset: 3px;
+  }
+}
+
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 0.82;
+  text-transform: uppercase;
+}
+
+@utility label {
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* ---------- motion ---------- */
+
+@keyframes nova-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.nova-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: nova-marquee 34s linear infinite;
+}
+
+@keyframes nova-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.4em, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.nova-clip {
+  overflow: hidden;
+  display: block;
+}
+
+.nova-clip > span {
+  display: block;
+  animation: nova-rise 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.nova-reveal {
+  opacity: 0;
+  transform: translate3d(0, 32px, 0);
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.nova-reveal[data-visible='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+.nova-img-mask {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 1.1s cubic-bezier(0.76, 0, 0.24, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.nova-img-mask[data-visible='true'] {
+  clip-path: inset(0 0 0 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nova-marquee-track {
+    animation: none;
+  }
+  .nova-clip > span {
+    animation: none;
+  }
+  .nova-reveal,
+  .nova-img-mask {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    transition: none;
+  }
+}
