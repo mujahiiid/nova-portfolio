@@ -1,74 +1,95 @@
+'use client'
+
 import Image from 'next/image'
+import { useRef, useState } from 'react'
+import { PRODUCTS, type Product } from './product-data'
+import { ProductQuickView } from './product-quick-view'
 import { Reveal } from './reveal'
 
-const FEATURED = [
-  {
-    title: 'Structure Jacket',
-    price: '€420',
-    material: 'Wool / Nylon',
-    image: '/images/piece-01.png',
-    alt: 'Oversized tailored charcoal wool and nylon jacket',
-    offset: 'md:mt-0',
-  },
-  {
-    title: 'Void Coat',
-    price: '€680',
-    material: 'Boiled Wool',
-    image: '/images/piece-04.png',
-    alt: 'Floor-length black wool coat photographed in an empty concrete space',
-    offset: 'md:mt-16',
-  },
-  {
-    title: 'Object Shirt',
-    price: '€190',
-    material: 'Poplin',
-    image: '/images/piece-03.png',
-    alt: 'Oversized off-white poplin shirt with a sculptural collar',
-    offset: 'md:mt-6',
-  },
-  {
-    title: 'Form Trouser',
-    price: '€260',
-    material: 'Cotton Twill',
-    image: '/images/piece-02.png',
-    alt: 'Wide-leg bone white pleated trousers',
-    offset: 'md:mt-24',
-  },
-]
+const FEATURED = [PRODUCTS[0], PRODUCTS[3], PRODUCTS[2], PRODUCTS[1]]
 
 export function Featured() {
+  const railRef = useRef<HTMLUListElement | null>(null)
+  const drag = useRef({ active: false, moved: false, x: 0, scrollLeft: 0 })
+  const [selected, setSelected] = useState<Product | null>(null)
+
   return (
-    <section id="pieces" aria-labelledby="featured-heading" className="py-20 md:py-32">
+    <>
+    <section id="pieces" aria-labelledby="featured-heading" className="nova-section-shell nova-section-compact border-b border-foreground/15 !px-0">
       <div className="flex flex-wrap items-end justify-between gap-4 px-4 md:px-8">
-        <h2 id="featured-heading" className="display text-[12vw] leading-none md:text-[6vw]">
-          Featured pieces
-        </h2>
-        <span className="label text-muted-foreground">Drag / scroll →</span>
+        <div>
+          <p className="label mb-4 text-muted-foreground">04 / Featured Pieces</p>
+          <h2 id="featured-heading" className="display type-section">Featured pieces</h2>
+        </div>
+        <span className="label border-b border-foreground/30 pb-1 text-foreground">Drag / scroll →</span>
       </div>
 
       <ul
-        className="mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-6 md:mt-16 md:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        ref={railRef}
+        aria-label="Featured NOVA pieces"
+        onPointerDown={(event) => {
+          if (event.pointerType !== 'mouse') return
+          const rail = railRef.current
+          if (!rail) return
+          drag.current = { active: true, moved: false, x: event.clientX, scrollLeft: rail.scrollLeft }
+          rail.setPointerCapture(event.pointerId)
+        }}
+        onPointerMove={(event) => {
+          const rail = railRef.current
+          if (!rail || !drag.current.active) return
+          const distance = event.clientX - drag.current.x
+          if (Math.abs(distance) > 6) drag.current.moved = true
+          rail.scrollLeft = drag.current.scrollLeft - distance
+        }}
+        onPointerUp={(event) => {
+          const rail = railRef.current
+          drag.current.active = false
+          if (rail?.hasPointerCapture(event.pointerId)) rail.releasePointerCapture(event.pointerId)
+        }}
+        onPointerCancel={() => {
+          drag.current.active = false
+        }}
+        onKeyDown={(event) => {
+          const rail = railRef.current
+          if (!rail || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return
+          event.preventDefault()
+          rail.scrollBy({ left: event.key === 'ArrowRight' ? rail.clientWidth * 0.7 : rail.clientWidth * -0.7, behavior: 'smooth' })
+        }}
+        tabIndex={0}
+        className="mt-10 flex cursor-grab snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-6 active:cursor-grabbing md:mt-12 md:gap-6 md:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {FEATURED.map((piece, i) => (
           <Reveal
             as="li"
-            key={piece.title}
+            key={piece.id}
             delay={i * 90}
-            className={`group w-[76vw] shrink-0 snap-start sm:w-[46vw] lg:w-[30vw] ${piece.offset}`}
+            className="group w-[82vw] shrink-0 snap-start sm:w-[46vw] lg:w-[28vw]"
           >
-            <a href="#collection" className="block">
+            <button
+              type="button"
+              onClick={(event) => {
+                if (drag.current.moved) {
+                  event.preventDefault()
+                  drag.current.moved = false
+                  return
+                }
+                setSelected(piece)
+              }}
+              className="block w-full text-left focus-visible:outline-offset-4"
+            >
               <div className="relative aspect-[3/4] overflow-hidden bg-[var(--ash)]/25">
                 <Image
-                  src={piece.image || '/placeholder.svg'}
+                  src={piece.image}
                   alt={piece.alt}
                   fill
                   sizes="(max-width: 640px) 76vw, 40vw"
+                  draggable={false}
                   className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 />
               </div>
               <div className="mt-4 flex items-start justify-between gap-4 border-t border-foreground/20 pt-3">
                 <div>
-                  <h3 className="display text-2xl md:text-3xl">{piece.title}</h3>
+                  <h3 className="display type-product">{piece.name}</h3>
                   <p className="label mt-2 text-muted-foreground">{piece.material}</p>
                 </div>
                 <div className="text-right">
@@ -81,10 +102,12 @@ export function Featured() {
                   </p>
                 </div>
               </div>
-            </a>
+            </button>
           </Reveal>
         ))}
       </ul>
     </section>
+    <ProductQuickView product={selected} onClose={() => setSelected(null)} />
+    </>
   )
 }

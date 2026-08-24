@@ -1,4 +1,4 @@
-const PHRASES = ['NOVA', 'NEW COLLECTION', 'SPRING SUMMER 2026', 'NOVA', 'NEW COLLECTION']
+const PHRASES = ['COLLECTION 06', 'NOVA', 'SPRING SUMMER 2026', 'DESIGNED IN CAIRO']
 
 export function Marquee({
   tone = 'red',
@@ -9,10 +9,10 @@ export function Marquee({
     <div className="flex shrink-0 items-center">
       {PHRASES.map((phrase, i) => (
         <span key={`${phrase}-${i}`} className="flex items-center">
-          <span className="display px-5 py-3 text-[8vw] leading-none md:text-5xl lg:text-6xl">
+          <span className="display px-5 py-2 text-[clamp(1.75rem,4vw,2.75rem)] leading-none">
             {phrase}
           </span>
-          <span aria-hidden="true" className="text-[8vw] leading-none opacity-40 md:text-5xl">
+          <span aria-hidden="true" className="text-[clamp(1.75rem,4vw,2.75rem)] leading-none opacity-40">
             /
           </span>
         </span>
@@ -29,7 +29,7 @@ export function Marquee({
           : 'overflow-hidden bg-[var(--ink)] text-[var(--cream)]'
       }
     >
-      <div className="nova-marquee-track">
+      <div className="nova-marquee-track" role="presentation">
         {row}
         {row}
       </div>

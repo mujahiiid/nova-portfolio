@@ -2,13 +2,13 @@ import { Reveal } from './reveal'
 
 export function Statement() {
   return (
-    <section id="about" aria-labelledby="statement-heading" className="px-4 py-28 md:px-8 md:py-48">
-      <p className="label mb-16 flex items-center gap-4 text-muted-foreground md:mb-28">
+    <section id="about" aria-labelledby="statement-heading" className="nova-section-shell border-b border-foreground/15">
+      <p className="label mb-12 flex items-center gap-4 text-muted-foreground md:mb-20">
         <span aria-hidden="true" className="inline-block h-[1px] w-16 bg-foreground/40" />
-        Manifesto
+        03 / Manifesto
       </p>
 
-      <h2 id="statement-heading" className="display text-[15vw] leading-[0.84] md:text-[9.5vw]">
+      <h2 id="statement-heading" className="display type-statement max-w-[28ch]">
         <Reveal as="span" className="block">
           We don&apos;t follow
         </Reveal>
@@ -23,13 +23,14 @@ export function Statement() {
         </Reveal>
       </h2>
 
-      <div className="mt-20 grid gap-8 border-t border-foreground/20 pt-6 md:mt-32 md:grid-cols-12">
+      <div className="mt-16 grid gap-8 border-t border-foreground/20 pt-6 md:mt-24 md:grid-cols-12">
         <p className="label text-muted-foreground md:col-span-3">Est. 2019 — Independent</p>
-        <p className="text-base leading-relaxed md:col-span-5 md:col-start-6 md:text-lg">
-          NOVA is a contemporary apparel studio working in short, deliberate runs. Every garment
-          begins as an object study — proportion first, trend never. We&apos;d rather be early than
-          agreeable.
-        </p>
+        <div className="md:col-span-6 md:col-start-6">
+          <p className="nova-copy">
+            NOVA is an independent Cairo studio exploring how volume, movement and restraint can reshape everyday dress. We create limited collections designed beyond the cycle of passing trends.
+          </p>
+          <a href="/journal#our-story" className="label mt-7 inline-flex min-h-11 items-center text-[var(--blaze)] hover:text-foreground">Read our story →</a>
+        </div>
       </div>
     </section>
   )

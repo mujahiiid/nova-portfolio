@@ -17,14 +17,28 @@ const archivo = Archivo({
 })
 
 export const metadata: Metadata = {
-  title: 'NOVA — Wear the unexpected.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
+  title: {
+    default: 'NOVA — Wear the unexpected.',
+    template: '%s — NOVA',
+  },
   description:
     'NOVA is a contemporary fashion house. Collection 06 — Spring / Summer 2026. Wear the unexpected.',
-  generator: 'v0.app',
+  applicationName: 'NOVA',
+  keywords: ['NOVA', 'independent fashion', 'Cairo fashion', 'contemporary apparel'],
+  authors: [{ name: 'NOVA Studio' }],
   openGraph: {
     title: 'NOVA — Wear the unexpected.',
     description: 'Collection 06 — Spring / Summer 2026.',
     type: 'website',
+    siteName: 'NOVA',
+    images: [{ url: '/images/campaign/nova-campaign-cairo-courtyard.webp', width: 1536, height: 1024 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'NOVA — Wear the unexpected.',
+    description: 'Collection 06 — Spring / Summer 2026.',
+    images: ['/images/campaign/nova-campaign-cairo-courtyard.webp'],
   },
   icons: {
     icon: [

@@ -3,131 +3,103 @@
 import Image from 'next/image'
 import { useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
+import { PRODUCTS, type Product } from './product-data'
+import { ProductQuickView } from './product-quick-view'
 import { Reveal } from './reveal'
 
-type Piece = {
-  no: string
-  name: string
-  image: string
-  alt: string
-  meta: string
-  ratio: string
-  wrapper: string
-}
-
-const PIECES: Piece[] = [
-  {
-    no: 'No. 01',
-    name: 'Structure Jacket',
-    image: '/images/piece-01.png',
-    alt: 'Model wearing an oversized tailored charcoal wool and nylon jacket',
-    meta: 'Wool / Nylon — €420',
-    ratio: 'aspect-[3/4]',
-    wrapper: 'md:col-span-5 md:col-start-1',
-  },
-  {
-    no: 'No. 02',
-    name: 'Form Trouser',
-    image: '/images/piece-02.png',
-    alt: 'Close crop of wide-leg bone white pleated trousers mid-stride',
-    meta: 'Cotton Twill — €260',
-    ratio: 'aspect-[4/3]',
-    wrapper: 'md:col-span-6 md:col-start-7 md:mt-32',
-  },
-  {
-    no: 'No. 03',
-    name: 'Object Shirt',
-    image: '/images/piece-03.png',
-    alt: 'Model in an oversized off-white poplin shirt with a sculptural collar',
-    meta: 'Poplin — €190',
-    ratio: 'aspect-[3/4]',
-    wrapper: 'md:col-span-4 md:col-start-3 md:-mt-16',
-  },
-  {
-    no: 'No. 04',
-    name: 'Void Coat',
-    image: '/images/piece-04.png',
-    alt: 'Model in a floor-length black wool coat crossing an empty concrete space',
-    ratio: 'aspect-[16/9] md:aspect-[21/9]',
-    meta: 'Boiled Wool — €680',
-    wrapper: 'md:col-span-12 md:mt-24',
-  },
+const LAYOUT = [
+  { ratio: 'aspect-[3/4]', wrapper: 'md:col-span-5 md:col-start-1' },
+  { ratio: 'aspect-[4/3]', wrapper: 'md:col-span-6 md:col-start-7 md:mt-20' },
+  { ratio: 'aspect-[3/4]', wrapper: 'md:col-span-5 md:col-start-1' },
+  { ratio: 'aspect-[16/9] md:aspect-auto md:h-[clamp(32rem,70vh,48rem)]', wrapper: 'md:col-span-12 md:mt-16' },
 ]
 
-function PieceFigure({ piece, index }: { piece: Piece; index: number }) {
-  const ref = useRef<HTMLDivElement | null>(null)
+function ProductMeta({ product, onOpen }: { product: Product; onOpen: () => void }) {
+  return (
+    <figcaption className="mt-3 grid gap-2 border-t border-foreground/25 pt-3 sm:grid-cols-[1fr_auto_1fr] sm:items-baseline">
+      <span className="label text-muted-foreground">{product.look}</span>
+      <button type="button" onClick={onOpen} className="display type-product min-h-11 justify-self-start hover:text-[var(--blaze)] sm:justify-self-center">
+        {product.name}
+      </button>
+      <span className="label text-foreground sm:text-right">{product.material} — {product.price}</span>
+      <button type="button" onClick={onOpen} className="label min-h-11 justify-self-start text-[var(--blaze)] hover:text-foreground sm:col-span-3 sm:justify-self-end">
+        View piece →
+      </button>
+    </figcaption>
+  )
+}
+
+function PieceFigure({ product, index, onOpen }: { product: Product; index: number; onOpen: () => void }) {
+  const ref = useRef<HTMLButtonElement | null>(null)
   const [cursor, setCursor] = useState<{ x: number; y: number } | null>(null)
+  const layout = LAYOUT[index]
 
   return (
-    <Reveal
-      as="figure"
-      delay={index * 90}
-      className={cn('group relative', piece.wrapper)}
-    >
-      <div
+    <Reveal as="figure" delay={index * 90} className={cn('group relative', layout.wrapper)}>
+      <button
         ref={ref}
-        onPointerMove={(e) => {
-          if (e.pointerType !== 'mouse') return
-          const rect = e.currentTarget.getBoundingClientRect()
-          setCursor({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+        type="button"
+        onClick={onOpen}
+        onPointerMove={(event) => {
+          if (event.pointerType !== 'mouse') return
+          const rect = event.currentTarget.getBoundingClientRect()
+          setCursor({ x: event.clientX - rect.left, y: event.clientY - rect.top })
         }}
         onPointerLeave={() => setCursor(null)}
-        className={cn('relative overflow-hidden bg-[var(--ash)]/25', piece.ratio)}
+        className={cn('relative block w-full overflow-hidden bg-[var(--ash)]/25 text-left', layout.ratio)}
+        aria-label={`View ${product.name}`}
       >
-        <Image
-          src={piece.image || '/placeholder.svg'}
-          alt={piece.alt}
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.06]"
-        />
-
+        <Image src={product.image} alt={product.alt} fill sizes="(max-width: 768px) 100vw, 55vw" className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]" />
         <span
           aria-hidden="true"
-          className={cn(
-            'label pointer-events-none absolute z-10 hidden items-center gap-2 bg-[var(--blaze)] px-3 py-2 text-[var(--cream)] transition-opacity duration-300 md:flex',
-            cursor ? 'opacity-100' : 'opacity-0',
-          )}
-          style={{
-            left: cursor?.x ?? 0,
-            top: cursor?.y ?? 0,
-            transform: 'translate(-50%, -50%)',
-          }}
+          className={cn('label pointer-events-none absolute z-10 hidden items-center bg-[var(--blaze)] px-3 py-2 text-[var(--cream)] transition-opacity duration-300 md:flex', cursor ? 'opacity-100' : 'opacity-0')}
+          style={{ left: cursor?.x ?? 0, top: cursor?.y ?? 0, transform: 'translate(-50%, -50%)' }}
         >
           View piece →
         </span>
-      </div>
-
-      <figcaption className="mt-3 flex items-baseline justify-between gap-4 border-t border-foreground/20 pt-3">
-        <span className="label text-muted-foreground">{piece.no}</span>
-        <h3 className="display text-[9vw] leading-none transition-transform duration-500 group-hover:-translate-y-1 md:text-4xl lg:text-5xl">
-          {piece.name}
-        </h3>
-        <span className="label max-w-[10ch] text-right text-muted-foreground opacity-0 transition-opacity duration-500 group-hover:opacity-100 md:max-w-none">
-          {piece.meta}
-        </span>
-      </figcaption>
+      </button>
+      <ProductMeta product={product} onOpen={onOpen} />
     </Reveal>
   )
 }
 
 export function Collection() {
-  return (
-    <section id="collection" aria-labelledby="collection-heading" className="px-4 py-20 md:px-8 md:py-32">
-      <div className="flex flex-wrap items-end justify-between gap-6 border-b border-foreground/20 pb-6">
-        <h2 id="collection-heading" className="display text-[16vw] leading-[0.82] md:text-[9vw]">
-          Collection <span className="text-[var(--blaze)]">06</span>
-        </h2>
-        <p className="label max-w-[26ch] text-muted-foreground leading-relaxed">
-          Four pieces. Built around volume, negative space and a refusal of the obvious.
-        </p>
-      </div>
+  const [selected, setSelected] = useState<Product | null>(null)
 
-      <div className="mt-12 grid gap-14 md:mt-16 md:grid-cols-12 md:gap-x-6 md:gap-y-0">
-        {PIECES.map((piece, i) => (
-          <PieceFigure key={piece.no} piece={piece} index={i} />
-        ))}
-      </div>
-    </section>
+  return (
+    <>
+      <section id="collection" aria-labelledby="collection-heading" className="nova-section-shell nova-section-compact">
+        <div className="nova-section-intro md:grid-cols-12 md:items-end">
+          <div className="md:col-span-7">
+            <p className="label mb-4 text-muted-foreground">01 / Collection</p>
+            <h2 id="collection-heading" className="display type-section">Collection <span className="text-[var(--blaze)]">06</span></h2>
+            <p className="label mt-5 text-foreground">Four studies in volume, structure and movement.</p>
+          </div>
+          <p className="nova-copy md:col-span-4 md:col-start-9">
+            Spring / Summer 2026 explores proportion, negative space and the relationship between clothing and the moving body.
+          </p>
+        </div>
+
+        <div className="mt-10 grid gap-12 md:mt-12 md:grid-cols-12 md:gap-x-6 md:gap-y-0">
+          {PRODUCTS.map((product, index) => (
+            <div key={product.id} className="contents">
+              <PieceFigure product={product} index={index} onOpen={() => setSelected(product)} />
+              {index === 2 ? (
+                <Reveal delay={300} className="border-y border-foreground/20 py-6 md:col-span-4 md:col-start-8 md:self-center">
+                  <p className="label text-muted-foreground">Look 03 / Study</p>
+                  <p className="nova-copy mt-5">A folded collar and extended hem turn crisp cotton poplin into a sculptural everyday layer.</p>
+                  <dl className="mt-6 grid gap-3 text-sm">
+                    <div className="flex justify-between gap-4"><dt className="label text-muted-foreground">Colours</dt><dd>Chalk / Electric</dd></div>
+                    <div className="flex justify-between gap-4"><dt className="label text-muted-foreground">Sizes</dt><dd>XS/S / M/L</dd></div>
+                  </dl>
+                  <button type="button" onClick={() => setSelected(product)} className="label mt-7 min-h-11 text-[var(--blaze)] hover:text-foreground">View Object Shirt →</button>
+                </Reveal>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      </section>
+      <ProductQuickView product={selected} onClose={() => setSelected(null)} />
+    </>
   )
 }

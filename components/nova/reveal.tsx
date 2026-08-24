@@ -41,7 +41,7 @@ export function Reveal({
           }
         }
       },
-      { rootMargin: '0px 0px -12% 0px', threshold: 0.08 },
+      { rootMargin: '12% 0px 12% 0px', threshold: 0.01 },
     )
 
     observer.observe(node)
@@ -53,9 +53,9 @@ export function Reveal({
       ref={ref as React.Ref<HTMLElement>}
       data-visible={visible ? 'true' : 'false'}
       style={{ ['--reveal-delay' as string]: `${delay}ms` }}
-      className={cn(variant === 'mask' ? 'nova-img-mask' : 'nova-reveal', className)}
+      className={cn(variant === 'mask' ? 'nova-mask-observer' : 'nova-reveal', className)}
     >
-      {children}
+      {variant === 'mask' ? <div className="nova-img-mask-inner">{children}</div> : children}
     </Tag>
   )
 }
